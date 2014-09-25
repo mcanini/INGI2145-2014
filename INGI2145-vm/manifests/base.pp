@@ -1,26 +1,15 @@
-#--One-time Executions----
+#--Global Execution params----
 
 Exec {
           path => "/usr/bin:/usr/sbin:/bin:/usr/local/bin:/usr/local/sbin:/sbin:/bin/sh",
           user => root,
 		  #logoutput => true,
 }
-   
-$once_lock = "/var/lock/puppet-once"
- 
- exec { 'run-once-commands':
-         command => "touch $once_lock",
-         creates => $once_lock,
-         notify  => [Exec['apt-update'], Exec['install hadoop']],
- }
-
 
 #--apt-update Triggers-----
 
 exec { "apt-update":
     command => "sudo apt-get update",
-    refreshonly => true,
-    #subscribe => Exec["update source list"]
 }
 
 Exec["apt-update"] -> Package <| |> #This means that an apt-update command has to be triggered before any package is installed
@@ -86,6 +75,18 @@ $hconfig4 = '<?xml version="1.0"?>
 
 #--Miscellaneous Execs-----
 
+exec {"fix guest addition issues": #presumed to be necessary because of a vagrant bug regarding auto-mounting
+     #command => "ln -s /opt/VBoxGuestAdditions-4.3.10/lib/VBoxGuestAdditions /usr/lib/VBoxGuestAdditions",
+	 command => 'echo "#!/bin/sh -e" | tee /etc/rc.local && echo "mount -t vboxsf -o rw,uid=1000,gid=1000 vagrant /vagrant" | tee -a /etc/rc.local && echo "exit 0" | tee -a /etc/rc.local',
+	 refreshonly => true,
+	 notify => Exec["restart system"]
+}
+
+exec {"restart system":
+     command => "shutdown -r now",
+	 refreshonly => true,
+}
+
 exec {"set hadoop permissions":
      command => "chown -R vagrant /usr/local/hadoop/",
      user => root,
@@ -94,18 +95,9 @@ exec {"set hadoop permissions":
      refreshonly => true,
 }
 
-exec {"setup ssh":
-     environment => 'HOME=/home/vagrant',
-     command => 'ssh-keygen -t rsa -P "" -f /home/vagrant/.ssh/id_rsa.pub && cat /home/vagrant/.ssh/id_rsa.pub | tee /home/vagrant/.ssh/authorized_keys',
-     subscribe => Exec["install hadoop"],
-	 #require => User["hduser"],
-     user => vagrant,
-     refreshonly => true,
-}
-
 exec {"set hadoop env":
      environment => 'HOME=/home/vagrant',
-     command => 'echo "export HADOOP_HOME=/usr/local/hadoop" | tee -a .bashrc && echo "export JAVA_HOME=/usr" | tee -a .bashrc',
+     command => 'echo "export HADOOP_HOME=/usr/local/hadoop" | tee -a .bashrc && echo "export JAVA_HOME=/usr" | tee -a .bashrc && echo "export HADOOP_OPTS=\"$HADOOP_OPTS -Djava.library.path=/usr/local/hadoop/lib/native\"" | tee -a .bashrc && echo "export HADOOP_COMMON_LIB_NATIVE_DIR=\"/usr/local/hadoop/lib/native\"" | tee -a .bashrc',
      require => Package["default-jdk"],
 	 user => vagrant,
      subscribe => Exec["install hadoop"],
@@ -133,44 +125,34 @@ exec {"configure hadoop 3":
 #--Disabling IPv6 (for Hadoop)---
 
 exec {"disable ipv6":
-     command => "echo 'net.ipv6.conf.all.disable_ipv6 = 1' | tee -a /etc/sysctl.conf && echo 'net.ipv6.conf.default.disable_ipv6 = 1' | tee -a /etc/sysctl.conf && echo 'net.ipv6.conf.lo.disable_ipv6 = 1' | tee -a /etc/sysctl.conf && shutdown -r now",
+     command => "echo 'net.ipv6.conf.all.disable_ipv6 = 1' | tee -a /etc/sysctl.conf && echo 'net.ipv6.conf.default.disable_ipv6 = 1' | tee -a /etc/sysctl.conf && echo 'net.ipv6.conf.lo.disable_ipv6 = 1' | tee -a /etc/sysctl.conf",
       subscribe => Exec["install hadoop"],
       refreshonly => true,
 }
 
 #--Users and Groups---------------
 
-user { "vagrant":
-     name => "vagrant",
-     ensure => present,
-     groups => ["sudo"]	 
-}
-
-#user { "hduser":
-#  ensure => "present",
-#  home => "/home/hduser",
-#  name => "hduser",
-#  shell => "/bin/bash",
-#  managehome => true,
-#  groups => 'hadoop',
-#  password => sha1('hduser'),
-# }
-#
+#vagrant already preconfigs a user called 'vagrant'. However, you can add your own users as shown below. Refer to the puppet type reference documentation (docs.puppetlabs.com/references/latest/type.html) for additional details.
+#user { "student":
+#     name => "student",
+#     ensure => present,
+#     groups => ["sudo"]	 
+#}
 
 #--Hadoop Installation-----------
  
 exec { "install hadoop":
     command => "wget http://mirror.ox.ac.uk/sites/rsync.apache.org/hadoop/common/hadoop-2.4.0/hadoop-2.4.0.tar.gz && tar -xzf hadoop-2.4.0.tar.gz && mv hadoop-2.4.0/ /usr/local && cd /usr/local && ln -s hadoop-2.4.0/ hadoop",
+	#command => "wget http://blog.woopi.org/wordpress/files/hadoop-2.4.0-64bit.tar.gz && tar -xzf hadoop-2.4.0-64bit.tar.gz && mv hadoop-2.4.0/ /usr/local && cd /usr/local && ln -s hadoop-2.4.0/ hadoop",
     creates => "/usr/local/hadoop",
     require => Package["default-jdk"],
-	refreshonly => true,
 }
 
 #--Packages----
 
 package { "ubuntu-desktop":
   ensure => present,
-  #notify => Exec["restart system"],
+  notify => Exec["fix guest addition issues"],
   install_options => ['--no-install-recommends'],
 }
 
