@@ -122,6 +122,12 @@ exec {"configure hadoop 3":
       refreshonly => true,
 }
 
+exec {"install boto":
+      command => "pip install boto",
+      subscribe => Package["python-pip"],
+      refreshonly => true,
+}
+
 #--Disabling IPv6 (for Hadoop)---
 
 exec {"disable ipv6":
@@ -164,14 +170,23 @@ package { "eclipse":
    ensure => present,
 }
 
+package { "python-pip":
+   ensure => present,
+}
+
 package { "awscli":
    ensure => present
 }
 
-package { "nodejs":
+package { ["nodejs", "npm"]:
    ensure => present
 }
 
 package { "default-jdk":
    ensure => present,
 }
+
+package { "memcached":
+   ensure => present
+}
+
