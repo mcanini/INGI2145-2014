@@ -1,6 +1,5 @@
 # build artifacts
 build
-gradle
 out
 *.log
 
