@@ -60,6 +60,9 @@ public class WordCount extends Configured implements Tool
 
         // TODO: implement the driver (configure the job)
 
+        // note: you will need "job.setJarByClass(WordCount.class);" to make the
+        //       job run of Elastic MapReduce
+
         return job.waitForCompletion(true) ? 0 : 1;
     }
 
