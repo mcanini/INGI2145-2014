@@ -122,6 +122,12 @@ exec {"configure hadoop 3":
       refreshonly => true,
 }
 
+exec {"configure spark logs":
+      command => "sed -i 's/INFO, console/WARN, console/g' /usr/local/spark/conf/log4j.properties.template && mv /usr/local/spark/conf/log4j.properties.template /usr/local/spark/conf/log4j.properties",
+      subscribe => Exec["install spark"],
+      refreshonly => true,
+}
+
 exec {"install boto":
       command => "pip install boto",
       subscribe => Package["python-pip"],
@@ -148,10 +154,17 @@ exec {"disable ipv6":
 #--Hadoop Installation-----------
  
 exec { "install hadoop":
-    command => "wget https://archive.apache.org/dist/hadoop/core/hadoop-2.4.0/hadoop-2.4.0.tar.gz && tar -xzf hadoop-2.4.0.tar.gz && mv hadoop-2.4.0/ /usr/local && cd /usr/local && ln -s hadoop-2.4.0/ hadoop",
+    command => "wget http://mirror.ox.ac.uk/sites/rsync.apache.org/hadoop/common/hadoop-2.4.0/hadoop-2.4.0.tar.gz && tar -xzf hadoop-2.4.0.tar.gz && mv hadoop-2.4.0/ /usr/local && cd /usr/local && ln -s hadoop-2.4.0/ hadoop",
 	#command => "wget http://blog.woopi.org/wordpress/files/hadoop-2.4.0-64bit.tar.gz && tar -xzf hadoop-2.4.0-64bit.tar.gz && mv hadoop-2.4.0/ /usr/local && cd /usr/local && ln -s hadoop-2.4.0/ hadoop",
     creates => "/usr/local/hadoop",
     require => Package["default-jdk"],
+}
+
+#--Apache Spark Installation-----
+
+exec { "install spark":
+    command => "wget http://d3kbcqa49mib13.cloudfront.net/spark-1.1.0-bin-hadoop2.4.tgz && tar -xzf spark-1.1.0-bin-hadoop2.4.tgz && mv spark-1.1.0-bin-hadoop2.4/ /usr/local && cd /usr/local && ln -s spark-1.1.0-bin-hadoop2.4/ spark",
+    creates => "/usr/local/spark",
 }
 
 #--Packages----
@@ -162,12 +175,21 @@ package { "ubuntu-desktop":
   install_options => ['--no-install-recommends'],
 }
 
+package { "git":
+   ensure => present,
+}
+
 package { "ssh":
    ensure => present,
 }
 
 package { "eclipse":
    ensure => present,
+}
+
+package { "maven2":
+   ensure => present,
+   require => Package["default-jdk"],
 }
 
 package { "python-pip":
@@ -189,4 +211,3 @@ package { "default-jdk":
 package { "memcached":
    ensure => present
 }
-
