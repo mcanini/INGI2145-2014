@@ -8,9 +8,15 @@ Today we'll learn the basics of the Javascript language as well as Node.js, a
 Javascript backend that runs on a server instead of in the browser.
 
 The only thing you need to do to follow this session is install Node.js from the
-[official website][node]. It is already installed in the INGI2145 VM.
+[official website][node].
 
 [node]: http://nodejs.org/
+
+Old versions of the course's VM are misconfigured. To fix the issue, run the
+following commands:
+
+    sudo aptitude remove node
+    sudo ln -s $(which nodejs) /usr/local/bin/node
 
 ## What is Javascript?
 
