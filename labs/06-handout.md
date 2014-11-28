@@ -97,12 +97,13 @@ the API reference on the [official website][express_api].
 
 ## EJS
 
-We'll now practice how to use the [EJS][ejs_intro] (Embedded Javascript)
+We'll now practice how to use the [EJS][ejs_home] (Embedded Javascript)
 templating engine. First, read [this introduction][ejs_intro].
 
 Can you get Express to render a list of supplies like in the example?
 
-[ejs_intro]: https://github.com/tj/ejs
+[ejs_home]: https://github.com/tj/ejs
+[ejs_intro]: http://www.embeddedjs.com/getting_started.html
 
 ## Session
 
