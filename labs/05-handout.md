@@ -15,8 +15,7 @@ The only thing you need to do to follow this session is install Node.js from the
 Old versions of the course's VM are misconfigured. To fix the issue, run the
 following commands:
 
-    sudo aptitude remove node
-    sudo ln -s $(which nodejs) /usr/local/bin/node
+    sudo aptitude install nodejs-legacy
 
 ## What is Javascript?
 
