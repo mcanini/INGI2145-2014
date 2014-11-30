@@ -1,0 +1,56 @@
+<div class="panel right">
+    <h1>Create a Tweet</h1>
+    <p>
+        <form action="/newTweet" id="newTweet">
+            <textarea name="text" class="ribbitText"></textarea>
+            <input type="submit" value="Tweet!">
+        </form>
+        <div id="result"></div>
+    </p>
+</div>
+<script>
+$( "#newTweet" ).submit(function( event ) {
+ 
+  // Stop form from submitting normally
+  event.preventDefault();
+ 
+  // Get some values from elements on the page:
+  var $form = $( this ),
+    text = $form.find( "textarea[name='text']" ).val(),
+    url = $form.attr( "action" );
+ 
+  // Send the data using post
+  var posting = $.post( url, { text: text } );
+ 
+  // Put the results in a div
+  posting.done(function( o ) {
+    $( "#result" ).empty().append( o.message );
+  })
+  .fail(function( h ) {
+    var o = h.responseJSON;
+    $( "#result" ).empty().append( o.message );
+  });
+});
+</script>
+<div id="ribbits" class="panel left">
+	<h1><%= title %></h1>
+    <div>
+        <% if (following == false) { %>
+            <a href="/usr/<%= username %>/follow">Follow</a>
+        <% } else if (following == true) { %>
+            <a href="/usr/<%= username %>/unfollow">Unfollow</a>
+        <% } %>
+    </div>
+    <% for(var i=0; i < tweets.length; i++) { %>
+	    <div class="ribbitWrapper">
+	    	<img class="avatar" src="/gfx/user2.png">
+	    	<span class="name">
+                <a href="/usr/<%= tweets[i].username %>">
+                    <%= tweets[i].username %>
+                </a>
+            </span>
+            <span class="time"><%= tweets[i].display_time %></span>
+	    	<p><%= tweets[i].text %></p>
+	    </div>
+    <% } %>
+</div>

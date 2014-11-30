@@ -160,6 +160,13 @@ exec { "install hadoop":
     require => Package["default-jdk"],
 }
 
+#--Kafka Installation------------
+
+exec { "install kafka":
+    command => "wget http://apache.cu.be/kafka/0.8.1.1/kafka_2.8.0-0.8.1.1.tgz && tar -xzf kafka_2.8.0-0.8.1.1.tgz && mv kafka_2.8.0-0.8.1.1/ /usr/local && cd /usr/local && ln -s kafka_2.8.0-0.8.1.1/ kafka",
+    creates => "/usr/local/kafka",
+}
+
 #--Apache Spark Installation-----
 
 exec { "install spark":
@@ -209,5 +216,9 @@ package { "default-jdk":
 }
 
 package { "memcached":
+   ensure => present
+}
+
+package { "mongodb":
    ensure => present
 }

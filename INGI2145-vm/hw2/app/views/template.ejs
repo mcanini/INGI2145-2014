@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet/less" href="/style.less">
+	<script src="/less.js"></script>
+	<script src="/jquery-1.11.1.min.js"></script>
+    <title><%= title %></title>
+</head>
+<body>
+	<header>
+		<div class="wrapper">
+            <a href="/home">
+			  <img src="/gfx/logo.png">
+			  <span>Twitter Clone</span>
+            </a>
+			<form action="/logout" method="post">
+				<input type="submit" id="btnLogOut" value="Log Out">
+			</form>
+		</div>
+	</header>
+	<div id="content">
+		<div class="wrapper">
+            <%- partial %>
+		</div>
+	</div>
+	<footer>
+		<div class="wrapper">
+			A Twitter Clone by YOUR NAME HERE
+		</div>
+	</footer>
+</body>
+</html>

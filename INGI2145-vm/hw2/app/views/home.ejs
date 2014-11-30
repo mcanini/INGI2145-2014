@@ -1,0 +1,39 @@
+<div class="panel right">
+	<h1>Create a Tweet</h1>
+	<p>
+		<form action="/newTweet" id="newTweet">
+			<textarea name="text" class="ribbitText"></textarea>
+			<input type="submit" value="Tweet!">
+		</form>
+		<div id="result"></div>
+	</p>
+</div>
+<script>
+$( "#newTweet" ).submit(function( event ) {
+ 
+  // Stop form from submitting normally
+  event.preventDefault();
+ 
+  // Get some values from elements on the page:
+  var $form = $( this ),
+    text = $form.find( "textarea[name='text']" ).val(),
+    url = $form.attr( "action" );
+ 
+  // TODO: Implement Ajax request
+});
+</script>
+<div id="ribbits" class="panel left">
+	<h1><%= title %></h1>
+    <% for(var i=0; i < tweets.length; i++) { %>
+	    <div class="ribbitWrapper">
+	    	<img class="avatar" src="/gfx/user2.png">
+	    	<span class="name">
+                <a href="/usr/<%= tweets[i].username %>">
+                    <%= tweets[i].username %>
+                </a>
+            </span>
+            <span class="time"><%= tweets[i].display_time %></span>
+	    	<p><%= tweets[i].text %></p>
+	    </div>
+    <% } %>
+</div>
