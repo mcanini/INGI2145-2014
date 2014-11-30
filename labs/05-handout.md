@@ -13,10 +13,9 @@ The only thing you need to do to follow this session is install Node.js from the
 [node]: http://nodejs.org/
 
 Old versions of the course's VM are misconfigured. To fix the issue, run the
-following commands:
+following commands, and accept when it proposes to uninstall the `node` package:
 
-    sudo aptitude remove node
-    sudo ln -s $(which nodejs) /usr/local/bin/node
+    sudo apt-get install nodejs-legacy
 
 ## What is Javascript?
 
