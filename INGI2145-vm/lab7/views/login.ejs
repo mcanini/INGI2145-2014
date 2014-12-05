@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet/less" href="/style.less">
+	<script src="/less.js"></script>
+	<script src="/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+	<header>
+		<div class="wrapper">
+			<span>Simple Node.js Web Application</span>
+		</div>
+	</header>
+	<div id="content">
+		<div>
+			<!-- display the error message here -->
+			<% if (message) { %>
+			<%= message %>
+			<% } %>
+
+			<hr class="top-10" />
+
+			<div><form action="/validate" id="validate" method="post">
+			<div><label class="control-label res-clabel" for="user">User</label>
+			<div><input id="user" type="text" name="user"/></div>
+			</div>
+			<div><label for="pass">Password</label>
+			<div><input id="pass" type="password" name="pass" /></div>
+			</div>
+			<button type="submit" >Sign in</button>
+			 
+			</form>
+		</div>
+	</div>
+	<footer>
+		<div class="wrapper">
+			Lab 7 - Web Programming
+		</div>
+	</footer>
+</body>
+</html>

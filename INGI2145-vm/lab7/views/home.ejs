@@ -1,0 +1,71 @@
+
+<div class="panel middle">
+	<h1>Query</h1>
+	<form action="/search" id="search">
+    <a> Search Paramter 1: </a>
+    <select name="searchtype1">
+      <option name="first_name" value="first_name">First Name</option>
+      <option name="last_name" value="last_name">Last Name</option>
+      <option name="group" value="group">Usergroup</option>
+      <option name="country" value="country">Country</option>
+    </select>
+    <div><input id="searchparam1" type="text" name="searchparam1"/></div>
+    <a> Search Paramter 2: </a>
+    <select name="searchtype2">
+      <option name="first_name" value="first_name">First Name</option>
+      <option name="last_name" value="last_name">Last Name</option>
+      <option name="group" value="group">Usergroup</option>
+      <option name="country" value="country">Country</option>
+    </select>
+    <div><input id="searchparam2" type="text" name="searchparam2"/></div>
+    <a> Search Paramter 3: </a>
+    <select name="searchtype3">
+      <option name="first_name" value="first_name">First Name</option>
+      <option name="last_name" value="last_name">Last Name</option>
+      <option name="group" value="group">Usergroup</option>
+      <option name="country" value="country">Country</option>
+    </select>
+    <div><input id="searchparam3" type="text" name="searchparam3"/></div>
+		<input type="submit" value="Search">
+	</form>
+	<div id="result"></div>
+<script>
+
+$( "#search" ).submit(function( event ) {
+
+  // Stop form from submitting normally
+  event.preventDefault();
+  
+  // Get some values from elements on the page:
+  var $form = $( this ),
+  searchparam1 = $form.find( "input[name='searchparam1']" ).val(),
+  searchparam2 = $form.find( "input[name='searchparam2']" ).val(),
+  searchparam3 = $form.find( "input[name='searchparam3']" ).val(),
+  searchtype1 = $form.find( "select[name='searchtype1']" ).val(),
+  searchtype2 = $form.find( "select[name='searchtype2']" ).val(),
+  searchtype3 = $form.find( "select[name='searchtype3']" ).val(),
+  url = $form.attr( "action" );
+  console.log({ searchtype1: searchtype1, searchtype2: searchtype2, searchtype3: searchtype3, searchparam1: searchparam1, searchparam2: searchparam2, searchparam3: searchparam3 });
+
+  // Send the data using post
+  var posting = $.post( url, { searchtype1: searchtype1, searchtype2: searchtype2, searchtype3: searchtype3, searchparam1: searchparam1, searchparam2: searchparam2, searchparam3: searchparam3 });
+
+  // Put the results in a div
+  posting.done(function( o ) {
+    var tableData = ' <tr><td>Username</td><td>First Name</td><td>Last Name</td><td>Country</td><td>Groups</td><td>Creation date</td></tr>';
+    $.each(o.arr, function(index, data) {
+     tableData += '<tr><td>'+data.username+'</td><td>'+data.first_name+'</td><td>'+data.last_name+'</td><td>'+data.country+'</td><td>'+data.group+'</td><td>'+data.date+'</td></tr>';
+    });
+    $('#resultsTable').html(tableData);
+  })
+  .fail(function( h ) {
+    var o = h.responseJSON;
+    $('#resultsTable').children( 'tr:not(:first)' ).remove();
+  });
+});
+</script>
+<div id="results" class="panel middle">
+	<h1><%= title %></h1>
+  <table name="resultsTable" id="resultsTable">
+  </table>
+</div>
