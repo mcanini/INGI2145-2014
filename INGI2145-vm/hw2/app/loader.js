@@ -6,6 +6,8 @@ var assert = require('assert');
 mongo.connect('mongodb://localhost:27017/twitter', function(err, db) {
 
   assert.equal(null, err);
+  var lineCount     = 0;
+  var readAllLines  = false;
 
   // TODO: empty the database
 
@@ -13,13 +15,14 @@ mongo.connect('mongodb://localhost:27017/twitter', function(err, db) {
   function callback(err) {
       --semaphore;
       if (semaphore !== 0) return;
-      db.close();
+        readAllLines = true;
   }
 
   var u = byline(fs.createReadStream(__dirname + '/users.json'));
 
   u.on('data', function(line) {
     try {
+      lineCount++;
       var obj = JSON.parse(line);
       console.log(obj);
       // NOTE: obj represents a user and contains three fields:
@@ -30,6 +33,9 @@ mongo.connect('mongodb://localhost:27017/twitter', function(err, db) {
 
       // TODO: load the user into the database
       // (including the information of which users this user is following)
+      // decrement the lineCount variable after every insertion
+      // if lineCount is equal to zero and readAllLines is true, close db connection
+      // using db.close()
     } catch (err) {
       console.log("Error:", err);
     }
@@ -41,6 +47,7 @@ mongo.connect('mongodb://localhost:27017/twitter', function(err, db) {
 
   t.on('data', function(line) {
     try {
+      lineCount++;
       var obj = JSON.parse(line);
       console.log(obj);
       // NOTE: obj represents a tweet and contains three fields:
@@ -48,7 +55,10 @@ mongo.connect('mongodb://localhost:27017/twitter', function(err, db) {
       // obj.text: The actual UTF-8 text of the tweet
       // obj.username: The user who posted this tweet
 
-      // TODO: load the tweet into the database      
+      // TODO: load the tweet into the database
+      // decrement the lineCount variable after every insertion
+      // if lineCount is equal to zero and readAllLines is true, close db connection
+      // using db.close()      
     } catch (err) {
       console.log("Error:", err);
     }
